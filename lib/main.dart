@@ -5,8 +5,10 @@ void main() {
   String namaBarang = "Buku Tulis";
   int hargaAnggota = 5000;
   int hargaUmum = 6000;
-  int jumlahStok = 25;
-  bool tersedia = true;
+  int jumlahStok = 0;
+  
+  // Menentukan apakah barang tersedia
+  bool tersedia = jumlahStok > 0;
 
   //jumlah yang dibeli
   int jumlahBeli = 3;
@@ -26,7 +28,17 @@ void main() {
   print("Total (anggota): $jumlahBeli pcs : Rp$totalAnggota");
   print("Selisih vs umum: Rp$selisih");
 
-  
+  if (tersedia) {
+    print("Status : Barang tersedia");
+  } else {
+    print("Status : Barang tidak tersedia");
+  }
+
+// Saya menggunakan tipe data String untuk nama barang,
+// int untuk harga dan stok karena berupa angka,
+// serta bool untuk menunjukkan apakah barang tersedia atau tidak.
+// Pemilihan tipe data yang tepat membuat data lebih mudah diolah dan mengurangi kesalahan saat kasir menghitung transaksi.
+
   runApp(const MyApp());
 }
 
