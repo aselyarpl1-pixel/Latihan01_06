@@ -12,16 +12,11 @@ void main() {
   // Menentukan apakah barang tersedia
   bool tersedia = jumlahStok > 0; // serta bool untuk menunjukkan apakah barang tersedia atau tidak.
 
-  //jumlah yang dibeli
-  int jumlahBeli = 3;
-
-  //perhitungan
-  int totalAnggota = jumlahBeli * hargaAnggota;
-  int totalUmum = jumlahBeli * hargaUmum;
-  int selisih = totalUmum - totalAnggota;
+  // jumlah yang dibeli
+  int jumlahBeli = 120;
 
   // Status pembeli
-  bool anggota = false;
+  bool anggota = true;
 
   // Menentukan harga sesuai jenis pembeli
   int harga;
@@ -32,22 +27,34 @@ void main() {
     harga = hargaUmum;
   }
 
+  // Perhitungan
+  int totalAnggota = jumlahBeli * hargaAnggota;
+  int totalUmum = jumlahBeli * hargaUmum;
+  int selisih = totalUmum - totalAnggota;
+
   // Hitung total belanja
-  int total = 50000;
+  int total = jumlahBeli * harga;
 
-  // Hitung diskon
+  // Deklarasi variabel
   double diskon = 0;
+  double hargaAkhir = 0;
 
-  if (total > 200000) {
-    diskon = total * 0.10;
-  } else if (total > 100000) {
-    diskon = total * 0.05;
+  // Validasi total
+  if (total < 0) {
+    print("Error: Total belanja tidak boleh bernilai negatif!");
   } else {
-    diskon = 0;
-  }
+    if (anggota && total > 500000) {
+      diskon = total * 0.15;
+    } else if (total > 200000) {
+      diskon = total * 0.10;
+    } else if (total > 100000) {
+      diskon = total * 0.05;
+    } else {
+      diskon = 0;
+    }
 
-  // Harga akhir
-  double hargaAkhir = total - diskon;
+    hargaAkhir = total - diskon;
+  }
 
   //pemisah ribuan
   String rupiah(int angka) {
@@ -76,6 +83,30 @@ switch (kategori) {
     rak = "Rak Lain";
 }
 
+  // ======================
+  // Daftar Barang Bernomor
+  // ======================
+
+  List<String> daftarBarang = [
+    "Buku Tulis",
+    "Pulpen",
+    "Penghapus",
+    "Roti"
+  ];
+
+  List<int> daftarHarga = [
+    3000,
+    2500,
+    1500,
+    5000
+  ];
+
+  print("=== DAFTAR BARANG ===");
+
+  for (int i = 0; i < daftarBarang.length; i++) {
+    print("${i + 1}. ${daftarBarang[i]} - ${rupiah(daftarHarga[i])}");
+  }
+
   //menampilkan hasil
   print("=== Kartu Data Barang ===");
   print("Nama Barang: $namaBarang");
@@ -87,9 +118,9 @@ switch (kategori) {
   print("Selisih vs umum: ${rupiah(selisih)}");
   print("Status Anggota: $anggota");
   print("Harga yang digunakan: ${rupiah(harga)}");
-  print("Total Belanja: ${rupiah(total)}");
-  print("Diskon: Rp${diskon.toInt()}");
-  print("Harga Akhir: Rp${hargaAkhir.toInt()}");
+  print("Total Belanja : ${rupiah(total)}");
+  print("Diskon : Rp${diskon.toInt()}");
+  print("Harga Akhir : Rp${hargaAkhir.toInt()}");
   print("Kategori : $kategori");
   print("Lokasi Rak : $rak");
 
@@ -97,6 +128,28 @@ switch (kategori) {
     print("Status : Barang tersedia");
   } else {
     print("Status : Barang tidak tersedia");
+  }
+
+
+  // ======================
+  // Perulangan While
+  // ======================
+
+  // Bahaya jika kondisi while keliru:
+  // Perulangan bisa terus berjalan atau menjual barang melebihi stok,
+  // sehingga stok menjadi negatif dan data penjualan tidak valid.
+
+  // Untuk mencegahnya, kondisi while dibuat "stok > 0".
+  // Dengan begitu penjualan akan berhenti tepat saat stok habis (0),
+  // sehingga koperasi tidak dapat menjual barang melebihi stok.
+
+  int stok = 3;
+
+  print("---- Penjualan Buku Tulis ----");
+
+  while (stok > 0) {
+    stok--;
+    print("Terjual 1, sisa stok: $stok");
   }
 
   runApp(const MyApp());
