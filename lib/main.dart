@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 void main() {
-  // Data Barang
-  String namaBarang = "Buku Tulis";
-  int hargaAnggota = 5000;
+  // Data Barang // Pemilihan tipe data yang tepat membuat data lebih mudah diolah dan mengurangi kesalahan saat kasir menghitung transaksi.
+  String namaBarang = "Buku Tulis"; // Saya menggunakan tipe data String untuk nama barang,
+  int hargaAnggota = 5000; // int untuk harga dan stok karena berupa angka,
   int hargaUmum = 6000;
-  int jumlahStok = 0;
+  int jumlahStok = 40;
+  String kategori = "atk";
+  String rak = "Rak 1";
   
   // Menentukan apakah barang tersedia
-  bool tersedia = jumlahStok > 0;
+  bool tersedia = jumlahStok > 0; // serta bool untuk menunjukkan apakah barang tersedia atau tidak.
 
   //jumlah yang dibeli
   int jumlahBeli = 3;
@@ -18,26 +20,84 @@ void main() {
   int totalUmum = jumlahBeli * hargaUmum;
   int selisih = totalUmum - totalAnggota;
 
+  // Status pembeli
+  bool anggota = false;
+
+  // Menentukan harga sesuai jenis pembeli
+  int harga;
+
+  if (anggota) {
+    harga = hargaAnggota;
+  } else {
+    harga = hargaUmum;
+  }
+
+  // Hitung total belanja
+  int total = 50000;
+
+  // Hitung diskon
+  double diskon = 0;
+
+  if (total > 200000) {
+    diskon = total * 0.10;
+  } else if (total > 100000) {
+    diskon = total * 0.05;
+  } else {
+    diskon = 0;
+  }
+
+  // Harga akhir
+  double hargaAkhir = total - diskon;
+
+  //pemisah ribuan
+  String rupiah(int angka) {
+  return "Rp${angka.toString().replaceAllMapped(
+    RegExp(r'\B(?=(\d{3})+(?!\d))'),
+    (match) => '.',
+  )}";
+}
+
+//switch case untuk kategori barang
+// Switch-case lebih rapi digunakan karena hanya memeriksa satu variabel,
+// yaitu kategori, dengan beberapa kemungkinan nilai.
+// Jika menggunakan banyak if-else, kode akan lebih panjang dan lebih sulit dibaca.
+
+switch (kategori) {
+  case "atk":
+    rak = "Rak 1";
+    break;
+  case "makanan":
+    rak = "Rak 2";
+    break;
+  case "minuman":
+    rak = "Rak 3";
+    break;
+  default:
+    rak = "Rak Lain";
+}
+
   //menampilkan hasil
   print("=== Kartu Data Barang ===");
   print("Nama Barang: $namaBarang");
-  print("Harga Anggota: $hargaAnggota");
-  print("Harga Umum: $hargaUmum");
+  print("Harga Anggota: ${rupiah(hargaAnggota)}");
+  print("Harga Umum: ${rupiah(hargaUmum)}");
   print("Jumlah Stok: $jumlahStok");
   print("Tersedia: $tersedia");
-  print("Total (anggota): $jumlahBeli pcs : Rp$totalAnggota");
-  print("Selisih vs umum: Rp$selisih");
+  print("Total (anggota): $jumlahBeli pcs : ${rupiah(totalAnggota)}");
+  print("Selisih vs umum: ${rupiah(selisih)}");
+  print("Status Anggota: $anggota");
+  print("Harga yang digunakan: ${rupiah(harga)}");
+  print("Total Belanja: ${rupiah(total)}");
+  print("Diskon: Rp${diskon.toInt()}");
+  print("Harga Akhir: Rp${hargaAkhir.toInt()}");
+  print("Kategori : $kategori");
+  print("Lokasi Rak : $rak");
 
   if (tersedia) {
     print("Status : Barang tersedia");
   } else {
     print("Status : Barang tidak tersedia");
   }
-
-// Saya menggunakan tipe data String untuk nama barang,
-// int untuk harga dan stok karena berupa angka,
-// serta bool untuk menunjukkan apakah barang tersedia atau tidak.
-// Pemilihan tipe data yang tepat membuat data lebih mudah diolah dan mengurangi kesalahan saat kasir menghitung transaksi.
 
   runApp(const MyApp());
 }
