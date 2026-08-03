@@ -1,6 +1,32 @@
 import 'package:flutter/material.dart';
 
 void main() {
+  // Data Barang
+  String namaBarang = "Buku Tulis";
+  int hargaAnggota = 5000;
+  int hargaUmum = 6000;
+  int jumlahStok = 25;
+  bool tersedia = true;
+
+  //jumlah yang dibeli
+  int jumlahBeli = 3;
+
+  //perhitungan
+  int totalAnggota = jumlahBeli * hargaAnggota;
+  int totalUmum = jumlahBeli * hargaUmum;
+  int selisih = totalUmum - totalAnggota;
+
+  //menampilkan hasil
+  print("=== Kartu Data Barang ===");
+  print("Nama Barang: $namaBarang");
+  print("Harga Anggota: $hargaAnggota");
+  print("Harga Umum: $hargaUmum");
+  print("Jumlah Stok: $jumlahStok");
+  print("Tersedia: $tersedia");
+  print("Total (anggota): $jumlahBeli pcs : Rp$totalAnggota");
+  print("Selisih vs umum: Rp$selisih");
+
+  
   runApp(const MyApp());
 }
 
