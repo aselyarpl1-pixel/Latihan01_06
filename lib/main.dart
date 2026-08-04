@@ -32,6 +32,7 @@ void main() {
 
   if (anggota) {
     harga = hargaAnggota;
+  // ignore: dead_code
   } else {
     harga = hargaUmum;
   }
