@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 
+
+double hitungTotal(int jumlah, double harga) {
+  return jumlah * harga;
+}
+
+double hitungHargaAkhir(double total, double persenPotongan) {
+  return total - (total * persenPotongan / 100);
+}
+
 void main() {
   // Data Barang // Pemilihan tipe data yang tepat membuat data lebih mudah diolah dan mengurangi kesalahan saat kasir menghitung transaksi.
   String namaBarang = "Buku Tulis"; // Saya menggunakan tipe data String untuk nama barang,
@@ -32,29 +41,23 @@ void main() {
   int totalUmum = jumlahBeli * hargaUmum;
   int selisih = totalUmum - totalAnggota;
 
-  // Hitung total belanja
-  int total = jumlahBeli * harga;
+  // Hitung total belanja menggunakan fungsi
+  double total = hitungTotal(jumlahBeli, harga.toDouble());
 
-  // Deklarasi variabel
   double diskon = 0;
   double hargaAkhir = 0;
+  double persenPotongan = 0;
 
-  // Validasi total
-  if (total < 0) {
-    print("Error: Total belanja tidak boleh bernilai negatif!");
-  } else {
-    if (anggota && total > 500000) {
-      diskon = total * 0.15;
-    } else if (total > 200000) {
-      diskon = total * 0.10;
-    } else if (total > 100000) {
-      diskon = total * 0.05;
-    } else {
-      diskon = 0;
-    }
-
-    hargaAkhir = total - diskon;
+  if (anggota && total > 500000) {
+    persenPotongan = 15;
+  } else if (total > 200000) {
+    persenPotongan = 10;
+  } else if (total > 100000) {
+    persenPotongan = 5;
   }
+
+  hargaAkhir = hitungHargaAkhir(total, persenPotongan);
+  diskon = total - hargaAkhir;
 
   //pemisah ribuan
   String rupiah(int angka) {
@@ -118,7 +121,8 @@ switch (kategori) {
   print("Selisih vs umum: ${rupiah(selisih)}");
   print("Status Anggota: $anggota");
   print("Harga yang digunakan: ${rupiah(harga)}");
-  print("Total Belanja : ${rupiah(total)}");
+  print("Total Belanja : ${rupiah(total.toInt())}");
+  print("Persen Potongan : $persenPotongan%");
   print("Diskon : Rp${diskon.toInt()}");
   print("Harga Akhir : Rp${hargaAkhir.toInt()}");
   print("Kategori : $kategori");
@@ -151,6 +155,41 @@ switch (kategori) {
     stok--;
     print("Terjual 1, sisa stok: $stok");
   }
+
+  // ======================
+  // Total Nilai Seluruh Stok
+  // ======================
+
+  List<int> daftarStok = [
+    2, // Buku Tulis
+    3, // Pulpen
+    4, // Penghapus
+    5  // Roti
+  ];
+
+  int totalNilaiStok = 0;
+
+  for (int i = 0; i < daftarBarang.length; i++) {
+    totalNilaiStok += daftarHarga[i] * daftarStok[i];
+  }
+
+  print("=== TOTAL NILAI SELURUH STOK ===");
+  print("Total nilai seluruh stok: ${rupiah(totalNilaiStok)}");
+
+  // ======================
+  // Barang dengan Stok Menipis
+  // ======================
+
+  print("=== BARANG DENGAN STOK MENIPIS ===");
+
+  for (int i = 0; i < daftarBarang.length; i++) {
+    if (daftarStok[i] < 5) {
+      print("${daftarBarang[i]} - Stok: ${daftarStok[i]}");
+    }
+  }
+
+  print(
+      "Laporan ini membantu koperasi mengetahui barang yang hampir habis sehingga dapat segera melakukan restok.");
 
   runApp(const MyApp());
 }
