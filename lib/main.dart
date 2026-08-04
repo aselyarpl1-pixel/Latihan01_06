@@ -42,6 +42,26 @@ Menyusun fungsi dari fungsi lain membuat program lebih rapi,
 mengurangi pengulangan kode, dan mudah dirawat.
 */
 
+class Barang {
+  String nama;
+  int harga;
+  int stok;
+  String kategori;
+
+  // Konstruktor
+  Barang(this.nama, this.harga, this.stok, this.kategori);
+
+  // Method
+  void tampilkan() {
+    print("===== KARTU BARANG =====");
+    print("Nama      : $nama");
+    print("Harga     : Rp$harga");
+    print("Stok      : $stok");
+    print("Kategori  : $kategori");
+    print("========================");
+  }
+}
+
 void main() {
   runApp(const MyApp());
 }
@@ -74,17 +94,28 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    String namaBarang = "Buku Tulis";
-    int hargaAnggota = 5000;
-    int hargaUmum = 6000;
-    int jumlahStok = 40;
-    int jumlahBeli = 120;
+    List<Barang> daftarBarang = [
+      Barang("Buku Tulis", 5000, 40, "ATK"),
+      Barang("Pulpen", 3000, 25, "ATK"),
+      Barang("Roti", 7000, 15, "Makanan"),
+    ];
+
+    // Memanggil method
+    for (var barang in daftarBarang) {
+      barang.tampilkan();
+    }
 
     bool anggota = true;
-    bool tersedia = jumlahStok > 0;
+    bool tersedia = daftarBarang[0].stok > 0;
 
-    String kategori = "ATK";
     String rak = "Rak 1";
+
+    int hargaAnggota = daftarBarang[0].harga;
+    int hargaUmum = 6000;
+    int jumlahStok = daftarBarang[0].stok;
+    int jumlahBeli = 120;
+
+    String namaBarang = daftarBarang[0].nama;
 
     double harga = hitungHarga(
       anggota,
@@ -175,7 +206,7 @@ class HomePage extends StatelessWidget {
                 ),
 
                 Text(
-                  "Kategori : $kategori",
+                  "Kategori : ${daftarBarang[0].kategori}",
                   style: const TextStyle(fontSize: 18),
                 ),
 
@@ -225,28 +256,24 @@ class HomePage extends StatelessWidget {
 
                 const SizedBox(height: 10),
 
-                ListTile(
-                  leading: const Icon(Icons.book),
-                  title: const Text("Buku Tulis"),
-                  trailing: Text(rupiah(3000)),
-                ),
+                /*Menggunakan List<Barang> lebih baik karena 
+                semua data barang tersimpan dalam satu koleksi dan 
+                dapat ditampilkan menggunakan perulangan.
+                Jika jumlah barang bertambah atau berkurang, 
+                cukup mengubah isi list tanpa perlu menambah atau 
+                menghapus banyak baris kode seperti pada Sprint 3.*/
 
-                ListTile(
-                  leading: const Icon(Icons.edit),
-                  title: const Text("Pulpen"),
-                  trailing: Text(rupiah(2500)),
-                ),
-
-                ListTile(
-                  leading: const Icon(Icons.cleaning_services),
-                  title: const Text("Penghapus"),
-                  trailing: Text(rupiah(1500)),
-                ),
-
-                ListTile(
-                  leading: const Icon(Icons.fastfood),
-                  title: const Text("Roti"),
-                  trailing: Text(rupiah(5000)),
+                Column(
+                  children: daftarBarang.map((barang) {
+                    return ListTile(
+                      leading: const Icon(Icons.shopping_bag),
+                      title: Text(barang.nama),
+                      subtitle: Text(
+                        "Stok: ${barang.stok} | ${barang.kategori}",
+                      ),
+                      trailing: Text(rupiah(barang.harga)),
+                    );
+                  }).toList(),
                 ),
               ],
             ),
@@ -256,3 +283,10 @@ class HomePage extends StatelessWidget {
     );
   }
 }
+
+/*
+Barang dimodelkan sebagai objek agar program lebih terstruktur,
+mudah dikembangkan, dan mengurangi pengulangan kode. Jika ada
+perubahan pada data atau fitur barang, cukup mengubah kelas
+Barang sehingga semua objek ikut menggunakan perubahan tersebut.
+*/
