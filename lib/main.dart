@@ -1,38 +1,41 @@
-// ignore_for_file: use_super_parameters, avoid_print, dead_code
+// ignore_for_file: dead_code, use_super_parameters, avoid_print
 
 import 'package:flutter/material.dart';
 
-// =======================
-// Fungsi Perhitungan
-// =======================
+// ======================================================
+// FUNGSI PERHITUNGAN
+// ======================================================
 
 double hitungTotal(int jumlah, double harga) {
   return jumlah * harga;
 }
 
-double hitungHargaAkhir(double total, double persenPotongan) {
+double hitungHargaAkhir(
+  double total,
+  double persenPotongan,
+) {
   return total - (total * persenPotongan / 100);
 }
 
-// HOTS-1
+// ======================================================
+// MENENTUKAN HARGA
+// ======================================================
+
 double hitungHarga(
   bool anggota,
-  double hAnggota,
-  double hUmum,
+  double hargaAnggota,
+  double hargaUmum,
 ) {
   if (anggota) {
-    return hAnggota;
-  } else {
-    return hUmum;
+    return hargaAnggota;
   }
+
+  return hargaUmum;
 }
 
-// Memindahkan keputusan ke fungsi mengurangi risiko salah karena
-// logika penentuan harga hanya ditulis di satu tempat.
-
-// =======================
+// ======================================================
 // HOTS-2
-// =======================
+// ======================================================
 
 double bayarAkhir(
   int jumlah,
@@ -40,26 +43,41 @@ double bayarAkhir(
   double persenPotongan,
 ) {
   double total = hitungTotal(jumlah, harga);
-  return hitungHargaAkhir(total, persenPotongan);
+
+  return hitungHargaAkhir(
+    total,
+    persenPotongan,
+  );
 }
 
-// Menyusun fungsi dari fungsi lain membuat program lebih rapi,
-// mengurangi pengulangan kode, dan mudah dirawat.
+// ======================================================
+// ASYNC - MEMUAT LAPORAN
+// ======================================================
 
-// =======================
+Future<void> muatLaporan() async {
+  print("=================================");
+  print("        BRANTAS MART");
+  print("=================================");
+  print("Menyiapkan laporan...");
+
+  await Future.delayed(
+    const Duration(seconds: 1),
+  );
+
+  print("Laporan siap!");
+  print("");
+}
+
+// ======================================================
 // CLASS BARANG
-// =======================
+// ======================================================
 
 class Barang {
   String nama;
   int harga;
-
-  // Stok dibuat private
   int _stok;
-
   String kategori;
 
-  // Konstruktor
   Barang(
     this.nama,
     this.harga,
@@ -67,55 +85,47 @@ class Barang {
     this.kategori,
   );
 
-  // =======================
+  // ====================================================
   // GETTER STOK
-  // =======================
+  // ====================================================
 
-  // Getter digunakan untuk membaca stok
   int get stok {
     return _stok;
   }
 
-  // =======================
+  // ====================================================
   // METHOD JUAL
-  // =======================
+  // ====================================================
 
-  // Method jual digunakan untuk mengurangi stok.
-  void jual(int n) {
-    if (n > 0 && n <= _stok) {
-      _stok -= n;
+  bool jual(int jumlah) {
+    if (jumlah > 0 && jumlah <= _stok) {
+      _stok -= jumlah;
 
-      print("Penjualan berhasil.");
-      print("Jumlah terjual : $n");
-      print("Sisa stok      : $_stok");
-    } else {
-      print("Penjualan gagal.");
-      print("Stok tidak mencukupi.");
+      return true;
     }
+
+    return false;
   }
 
-  // =======================
+  // ====================================================
   // METHOD TAMPILKAN
-  // =======================
+  // ====================================================
 
   void tampilkan() {
-    print("===== KARTU BARANG =====");
     print("Nama      : $nama");
     print("Harga     : Rp$harga");
     print("Stok      : $_stok");
     print("Kategori  : $kategori");
-    print("========================");
   }
 }
 
-// =======================
+// ======================================================
 // CLASS TURUNAN BARANG PROMO
-// =======================
+// ======================================================
 
 class BarangPromo extends Barang {
   double diskon;
 
-  // Konstruktor BarangPromo
   BarangPromo(
     String nama,
     int harga,
@@ -129,125 +139,280 @@ class BarangPromo extends Barang {
           kategori,
         );
 
-  // Method khusus BarangPromo
   double hargaPromo() {
     return harga - (harga * diskon / 100);
   }
 }
 
-// =======================
-// FUNGSI PROSES BELI
-// =======================
+// ======================================================
+// FUNGSI MENAMPILKAN DAFTAR BARANG
+// ======================================================
 
-void prosesBeli(String inputJumlah) {
+void tampilkanDaftarBarang(
+  List<Barang> daftarBarang,
+) {
+  print("=================================");
+  print("         DAFTAR BARANG");
+  print("=================================");
+
+  for (Barang barang in daftarBarang) {
+    barang.tampilkan();
+    print("---------------------------------");
+  }
+}
+
+// ======================================================
+// FUNGSI PROSES 1 TRANSAKSI
+// ======================================================
+
+void prosesTransaksi({
+  required Barang barang,
+  required String inputJumlah,
+  required bool anggota,
+  required int hargaUmum,
+}) {
+  print("=================================");
+  print("         PROSES TRANSAKSI");
+  print("=================================");
+
   try {
-    // Mengubah input menjadi angka
+    // -----------------------------------------------
+    // VALIDASI INPUT
+    // -----------------------------------------------
+
     int jumlah = int.parse(inputJumlah);
 
-    // Membuat objek barang
-    Barang barang = Barang(
+    if (jumlah <= 0) {
+      print("Transaksi gagal.");
+      print("Jumlah pembelian harus lebih dari 0.");
+      return;
+    }
+
+    // -----------------------------------------------
+    // CEK STOK
+    // -----------------------------------------------
+
+    if (jumlah > barang.stok) {
+      print("Transaksi gagal.");
+      print("Stok ${barang.nama} tidak mencukupi.");
+      print("Stok tersedia : ${barang.stok}");
+      return;
+    }
+
+    // -----------------------------------------------
+    // MENENTUKAN HARGA
+    // -----------------------------------------------
+
+    double harga = hitungHarga(
+      anggota,
+      barang.harga.toDouble(),
+      hargaUmum.toDouble(),
+    );
+
+    // -----------------------------------------------
+    // TOTAL BELANJA
+    // -----------------------------------------------
+
+    double total = hitungTotal(
+      jumlah,
+      harga,
+    );
+
+    // -----------------------------------------------
+    // MENENTUKAN POTONGAN
+    // -----------------------------------------------
+
+    double persenPotongan = 0;
+
+    if (anggota && total > 500000) {
+      persenPotongan = 15;
+    } else if (total > 200000) {
+      persenPotongan = 10;
+    } else if (total > 100000) {
+      persenPotongan = 5;
+    }
+
+    // -----------------------------------------------
+    // HARGA AKHIR
+    // -----------------------------------------------
+
+    double hargaAkhir = bayarAkhir(
+      jumlah,
+      harga,
+      persenPotongan,
+    );
+
+    double nilaiPotongan =
+        total - hargaAkhir;
+
+    // -----------------------------------------------
+    // KURANGI STOK
+    // -----------------------------------------------
+
+    bool berhasil = barang.jual(jumlah);
+
+    if (!berhasil) {
+      print("Transaksi gagal.");
+      print("Stok tidak mencukupi.");
+      return;
+    }
+
+    // -----------------------------------------------
+    // HASIL TRANSAKSI
+    // -----------------------------------------------
+
+    print("Nama barang       : ${barang.nama}");
+    print("Jumlah beli       : $jumlah");
+    print(
+      "Status anggota    : ${anggota ? "Ya" : "Tidak"}",
+    );
+    print("Harga satuan      : Rp${harga.toInt()}");
+    print("Total belanja     : Rp${total.toInt()}");
+    print("Potongan          : $persenPotongan%");
+    print(
+      "Nilai potongan    : Rp${nilaiPotongan.toInt()}",
+    );
+    print(
+      "Harga akhir       : Rp${hargaAkhir.toInt()}",
+    );
+    print("Sisa stok         : ${barang.stok}");
+    print("---------------------------------");
+    print("TRANSAKSI BERHASIL");
+    print("=================================");
+  } on FormatException {
+    // -----------------------------------------------
+    // MENANGANI INPUT BUKAN ANGKA
+    // -----------------------------------------------
+
+    print("Input tidak valid.");
+    print("Jumlah pembelian harus berupa angka.");
+    print("Transaksi dibatalkan.");
+    print("Program tetap berjalan.");
+    print("=================================");
+  } catch (e) {
+    // -----------------------------------------------
+    // MENANGANI ERROR LAIN
+    // -----------------------------------------------
+
+    print("Terjadi kesalahan.");
+    print("Transaksi tidak dapat diproses.");
+    print("Program tetap berjalan.");
+    print("=================================");
+  }
+}
+
+// ======================================================
+// MAIN
+// ======================================================
+
+Future<void> main() async {
+  // ====================================================
+  // 1. MUAT LAPORAN
+  // ====================================================
+
+  await muatLaporan();
+
+  // ====================================================
+  // 2. DATA BARANG
+  // ====================================================
+
+  List<Barang> daftarBarang = [
+    Barang(
       "Buku Tulis",
       5000,
       40,
       "ATK",
-    );
+    ),
+    Barang(
+      "Pulpen",
+      3000,
+      25,
+      "ATK",
+    ),
+    Barang(
+      "Roti",
+      7000,
+      15,
+      "Makanan",
+    ),
+  ];
 
-    print("===== PROSES BELI =====");
-    print("Input jumlah : $inputJumlah");
+  // ====================================================
+  // 3. TAMPILKAN BARANG
+  // ====================================================
 
-    // Memproses penjualan
-    barang.jual(jumlah);
-  } catch (e) {
-    // Jika input bukan angka
-    print("Input tidak valid.");
-    print("Silakan masukkan jumlah dalam bentuk angka.");
-  } finally {
-    // Selalu dijalankan
-    print("Transaksi dicatat di log.");
-    print("======================");
-  }
-}
-
-// =======================
-// MAIN
-// =======================
-
-void main() {
-  // =======================
-  // UJI ENKAPSULASI
-  // =======================
-
-  Barang barangUji = Barang(
-    "Buku Tulis",
-    5000,
-    40,
-    "ATK",
+  tampilkanDaftarBarang(
+    daftarBarang,
   );
 
-  print("===== SEBELUM PENJUALAN =====");
-  barangUji.tampilkan();
-
-  // Menjual 10 barang
-  barangUji.jual(10);
-
   print("");
-  print("===== SETELAH PENJUALAN =====");
-  print("Stok sekarang : ${barangUji.stok}");
 
-  // =======================
-  // UJI BARANG PROMO
-  // =======================
+  // ====================================================
+  // 4. DATA TRANSAKSI
+  // ====================================================
 
-  BarangPromo barangPromo = BarangPromo(
-    "Buku Tulis Promo",
-    5000,
-    40,
-    "ATK",
-    10,
-  );
+  Barang barangDipilih =
+      daftarBarang[0];
 
-  double hargaPromo = barangPromo.hargaPromo();
+  bool anggota = true;
 
-  print("");
-  print("===== BARANG PROMO =====");
-  print("Nama        : ${barangPromo.nama}");
-  print("Harga       : Rp${barangPromo.harga}");
-  print("Stok        : ${barangPromo.stok}");
-  print("Kategori    : ${barangPromo.kategori}");
-  print("Diskon      : ${barangPromo.diskon}%");
-  print("Harga Promo : Rp${hargaPromo.toInt()}");
-  print("========================");
+  int hargaUmum = 6000;
 
-  // =======================
-  // UJI VALIDASI INPUT
-  // =======================
-
-  print("");
-  print("===== UJI VALIDASI INPUT =====");
+  // ====================================================
+  // 5. PROSES 1 TRANSAKSI
+  // ====================================================
 
   // Input benar
-  prosesBeli("2");
+  prosesTransaksi(
+    barang: barangDipilih,
+    inputJumlah: "10",
+    anggota: anggota,
+    hargaUmum: hargaUmum,
+  );
+
+  // ====================================================
+  // 6. BUKTI PROGRAM TETAP BERJALAN
+  // ====================================================
 
   print("");
+  print("===== SETELAH TRANSAKSI =====");
+  print(
+    "Stok ${barangDipilih.nama} sekarang : "
+    "${barangDipilih.stok}",
+  );
 
-  // Input salah
-  prosesBeli("dua");
+  // ====================================================
+  // 7. UJI SALAH INPUT
+  // ====================================================
 
-  // Membuktikan program tetap berjalan
-  // setelah menerima input yang salah
-  print("Setelah input salah, program masih berjalan.");
+  print("");
+  print("===== UJI SALAH INPUT =====");
+
+  prosesTransaksi(
+    barang: barangDipilih,
+    inputJumlah: "dua",
+    anggota: anggota,
+    hargaUmum: hargaUmum,
+  );
+
+  // ====================================================
+  // 8. PROGRAM TETAP BERJALAN
+  // ====================================================
+
+  print("");
   print("===== PROGRAM SELESAI =====");
+  print("Program berjalan tanpa runtime error.");
 
-  /* Penanganan galat membuat sistem lebih aman karena kesalahan 
-  input tidak langsung membuat program berhenti. Pengurus juga mendapat
-  pesan yang jelas sehingga tahu apa yang harus diperbaiki.*/
+  // ====================================================
+  // 9. JALANKAN FLUTTER
+  // ====================================================
 
   runApp(const MyApp());
 }
 
-// =======================
+// ======================================================
 // MY APP
-// =======================
+// ======================================================
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -256,37 +421,43 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Koperasi Sekolah',
+      title: "Brantas Mart",
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.green,
         ),
+        useMaterial3: true,
       ),
       home: const HomePage(),
     );
   }
 }
 
-// =======================
+// ======================================================
 // HOME PAGE
-// =======================
+// ======================================================
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  // Fungsi format rupiah
+  // ====================================================
+  // FORMAT RUPIAH
+  // ====================================================
+
   String rupiah(int angka) {
     return "Rp${angka.toString().replaceAllMapped(
-          RegExp(r'\B(?=(\d{3})+(?!\d))'),
-          (match) => '.',
+          RegExp(
+            r'\B(?=(\d{3})+(?!\d))',
+          ),
+          (match) => ".",
         )}";
   }
 
   @override
   Widget build(BuildContext context) {
-    // =======================
+    // ==================================================
     // DAFTAR BARANG
-    // =======================
+    // ==================================================
 
     List<Barang> daftarBarang = [
       Barang(
@@ -309,11 +480,12 @@ class HomePage extends StatelessWidget {
       ),
     ];
 
-    // =======================
-    // OBJEK BARANG PROMO
-    // =======================
+    // ==================================================
+    // BARANG PROMO
+    // ==================================================
 
-    BarangPromo barangPromo = BarangPromo(
+    BarangPromo barangPromo =
+        BarangPromo(
       "Buku Tulis Promo",
       5000,
       40,
@@ -321,31 +493,24 @@ class HomePage extends StatelessWidget {
       10,
     );
 
-    double hargaPromo = barangPromo.hargaPromo();
+    double hargaPromo =
+        barangPromo.hargaPromo();
 
-    // =======================
+    // ==================================================
     // DATA TRANSAKSI
-    // =======================
+    // ==================================================
 
     bool anggota = true;
 
-    bool tersedia = daftarBarang[0].stok > 0;
+    Barang barang =
+        daftarBarang[0];
 
-    String rak = "Rak 1";
-
-    int hargaAnggota = daftarBarang[0].harga;
+    int hargaAnggota =
+        barang.harga;
 
     int hargaUmum = 6000;
 
-    int jumlahStok = daftarBarang[0].stok;
-
     int jumlahBeli = 10;
-
-    String namaBarang = daftarBarang[0].nama;
-
-    // =======================
-    // MENENTUKAN HARGA
-    // =======================
 
     double harga = hitungHarga(
       anggota,
@@ -353,18 +518,14 @@ class HomePage extends StatelessWidget {
       hargaUmum.toDouble(),
     );
 
-    // =======================
-    // TOTAL BELANJA
-    // =======================
-
     double total = hitungTotal(
       jumlahBeli,
       harga,
     );
 
-    // =======================
-    // MENENTUKAN POTONGAN
-    // =======================
+    // ==================================================
+    // POTONGAN
+    // ==================================================
 
     double persenPotongan = 0;
 
@@ -376,26 +537,23 @@ class HomePage extends StatelessWidget {
       persenPotongan = 5;
     }
 
-    // =======================
-    // HARGA AKHIR
-    // =======================
-
     double hargaAkhir = bayarAkhir(
       jumlahBeli,
       harga,
       persenPotongan,
     );
 
-    double diskonTransaksi = total - hargaAkhir;
+    double nilaiPotongan =
+        total - hargaAkhir;
 
-    // =======================
+    // ==================================================
     // TAMPILAN
-    // =======================
+    // ==================================================
 
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          "Koperasi Sekolah",
+          "Brantas Mart",
         ),
         centerTitle: true,
       ),
@@ -404,132 +562,182 @@ class HomePage extends StatelessWidget {
         child: Card(
           elevation: 5,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
+            borderRadius:
+                BorderRadius.circular(15),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding:
+                const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment:
+                  CrossAxisAlignment.start,
               children: [
-                // =======================
+                // ======================================
                 // JUDUL
-                // =======================
+                // ======================================
 
                 const Center(
                   child: Text(
-                    "LAPORAN TRANSAKSI KOPERASI",
+                    "LAPORAN TRANSAKSI BRANTAS MART",
+                    textAlign:
+                        TextAlign.center,
                     style: TextStyle(
                       fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                      fontWeight:
+                          FontWeight.bold,
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 20),
+                const SizedBox(
+                  height: 20,
+                ),
 
-                // =======================
+                // ======================================
                 // DATA BARANG
-                // =======================
+                // ======================================
+
+                const Text(
+                  "DATA BARANG",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight:
+                        FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 10,
+                ),
 
                 Text(
-                  "Nama Barang : $namaBarang",
-                  style: const TextStyle(
+                  "Nama Barang : ${barang.nama}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Harga Anggota : ${rupiah(hargaAnggota)}",
-                  style: const TextStyle(
+                  "Kategori : ${barang.kategori}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Harga Umum : ${rupiah(hargaUmum)}",
-                  style: const TextStyle(
+                  "Harga Anggota : "
+                  "${rupiah(hargaAnggota)}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Jumlah Stok : $jumlahStok",
-                  style: const TextStyle(
+                  "Harga Umum : "
+                  "${rupiah(hargaUmum)}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
+                ),
+
+                Text(
+                  "Stok : ${barang.stok}",
+                  style:
+                      const TextStyle(
+                    fontSize: 18,
+                  ),
+                ),
+
+                const Divider(
+                  height: 35,
+                ),
+
+                // ======================================
+                // TRANSAKSI
+                // ======================================
+
+                const Text(
+                  "TRANSAKSI",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight:
+                        FontWeight.bold,
+                  ),
+                ),
+
+                const SizedBox(
+                  height: 10,
                 ),
 
                 Text(
                   "Jumlah Beli : $jumlahBeli",
-                  style: const TextStyle(
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Status Anggota : ${anggota ? "Ya" : "Tidak"}",
-                  style: const TextStyle(
+                  "Status Anggota : "
+                  "${anggota ? "Ya" : "Tidak"}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Barang Tersedia : ${tersedia ? "Ya" : "Tidak"}",
-                  style: const TextStyle(
+                  "Harga Satuan : "
+                  "${rupiah(harga.toInt())}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Kategori : ${daftarBarang[0].kategori}",
-                  style: const TextStyle(
+                  "Total Belanja : "
+                  "${rupiah(total.toInt())}",
+                  style:
+                      const TextStyle(
+                    fontSize: 18,
+                    fontWeight:
+                        FontWeight.bold,
+                  ),
+                ),
+
+                Text(
+                  "Potongan : "
+                  "$persenPotongan%",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Lokasi Rak : $rak",
-                  style: const TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-
-                const Divider(
-                  height: 35,
-                ),
-
-                // =======================
-                // TRANSAKSI
-                // =======================
-
-                Text(
-                  "Total Belanja : ${rupiah(total.toInt())}",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-
-                Text(
-                  "Potongan : $persenPotongan%",
-                  style: const TextStyle(
+                  "Nilai Potongan : "
+                  "${rupiah(nilaiPotongan.toInt())}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Diskon : ${rupiah(diskonTransaksi.toInt())}",
-                  style: const TextStyle(
-                    fontSize: 18,
-                  ),
-                ),
-
-                Text(
-                  "Harga Akhir : ${rupiah(hargaAkhir.toInt())}",
-                  style: const TextStyle(
+                  "Harga Akhir : "
+                  "${rupiah(hargaAkhir.toInt())}",
+                  style:
+                      const TextStyle(
                     fontSize: 20,
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
+                    color:
+                        Colors.green,
+                    fontWeight:
+                        FontWeight.bold,
                   ),
                 ),
 
@@ -537,100 +745,130 @@ class HomePage extends StatelessWidget {
                   height: 35,
                 ),
 
-                // =======================
+                // ======================================
                 // BARANG PROMO
-                // =======================
+                // ======================================
 
                 const Text(
                   "BARANG PROMO",
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                        FontWeight.bold,
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(
+                  height: 10,
+                ),
 
                 Text(
-                  "Nama Barang Promo : ${barangPromo.nama}",
-                  style: const TextStyle(
+                  "Nama : "
+                  "${barangPromo.nama}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Harga Awal : ${rupiah(barangPromo.harga)}",
-                  style: const TextStyle(
+                  "Harga Awal : "
+                  "${rupiah(barangPromo.harga)}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Stok : ${barangPromo.stok}",
-                  style: const TextStyle(
+                  "Stok : "
+                  "${barangPromo.stok}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Kategori : ${barangPromo.kategori}",
-                  style: const TextStyle(
+                  "Kategori : "
+                  "${barangPromo.kategori}",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Diskon : ${barangPromo.diskon}%",
-                  style: const TextStyle(
+                  "Diskon : "
+                  "${barangPromo.diskon}%",
+                  style:
+                      const TextStyle(
                     fontSize: 18,
                   ),
                 ),
 
                 Text(
-                  "Harga Promo : ${rupiah(hargaPromo.toInt())}",
-                  style: const TextStyle(
+                  "Harga Promo : "
+                  "${rupiah(hargaPromo.toInt())}",
+                  style:
+                      const TextStyle(
                     fontSize: 20,
-                    color: Colors.green,
-                    fontWeight: FontWeight.bold,
+                    color:
+                        Colors.green,
+                    fontWeight:
+                        FontWeight.bold,
                   ),
                 ),
 
-                const SizedBox(height: 25),
+                const SizedBox(
+                  height: 25,
+                ),
 
-                // =======================
+                // ======================================
                 // DAFTAR BARANG
-                // =======================
+                // ======================================
 
                 const Text(
-                  "Daftar Barang",
+                  "DAFTAR BARANG",
                   style: TextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.bold,
+                    fontWeight:
+                        FontWeight.bold,
                   ),
                 ),
 
-                const SizedBox(height: 10),
+                const SizedBox(
+                  height: 10,
+                ),
 
                 ListView(
                   shrinkWrap: true,
                   physics:
                       const NeverScrollableScrollPhysics(),
-                  children: daftarBarang.map((barang) {
-                    return ListTile(
-                      leading: const Icon(
-                        Icons.shopping_bag,
-                      ),
-                      title: Text(
-                        barang.nama,
-                      ),
-                      subtitle: Text(
-                        "Stok: ${barang.stok} | ${barang.kategori}",
-                      ),
-                      trailing: Text(
-                        rupiah(barang.harga),
-                      ),
-                    );
-                  }).toList(),
+                  children:
+                      daftarBarang.map(
+                    (barang) {
+                      return ListTile(
+                        leading:
+                            const Icon(
+                          Icons.shopping_bag,
+                        ),
+                        title: Text(
+                          barang.nama,
+                        ),
+                        subtitle: Text(
+                          "Stok: "
+                          "${barang.stok} | "
+                          "${barang.kategori}",
+                        ),
+                        trailing: Text(
+                          rupiah(
+                            barang.harga,
+                          ),
+                        ),
+                      );
+                    },
+                  ).toList(),
                 ),
               ],
             ),
@@ -640,15 +878,3 @@ class HomePage extends StatelessWidget {
     );
   }
 }
-
-/*
-Melindungi _stok penting agar stok barang tidak bisa diubah
-sembarangan dari luar class.
-
-Dengan menggunakan _stok sebagai private, perubahan stok
-hanya dilakukan melalui method jual() yang sudah memiliki
-aturan pengecekan.
-
-Hal ini menjaga data stok tetap benar dan mencegah jumlah
-stok menjadi tidak sesuai dengan transaksi koperasi.
-*/
