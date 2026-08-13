@@ -238,6 +238,10 @@ void main() {
   print("Setelah input salah, program masih berjalan.");
   print("===== PROGRAM SELESAI =====");
 
+  /* Penanganan galat membuat sistem lebih aman karena kesalahan 
+  input tidak langsung membuat program berhenti. Pengurus juga mendapat
+  pesan yang jelas sehingga tahu apa yang harus diperbaiki.*/
+
   runApp(const MyApp());
 }
 
