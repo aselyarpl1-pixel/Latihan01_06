@@ -1,4 +1,4 @@
-// ignore_for_file: dead_code, use_super_parameters, avoid_print
+// ignore_for_file: use_super_parameters, avoid_print, dead_code
 
 import 'package:flutter/material.dart';
 
@@ -27,13 +27,13 @@ double hitungHarga(
   }
 }
 
-/*
-Memindahkan keputusan ke fungsi mengurangi risiko salah karena
-logika penentuan harga hanya ditulis di satu tempat.
-Jika aturan harga berubah, cukup mengubah fungsi ini.
-*/
+// Memindahkan keputusan ke fungsi mengurangi risiko salah karena
+// logika penentuan harga hanya ditulis di satu tempat.
 
+// =======================
 // HOTS-2
+// =======================
+
 double bayarAkhir(
   int jumlah,
   double harga,
@@ -43,10 +43,8 @@ double bayarAkhir(
   return hitungHargaAkhir(total, persenPotongan);
 }
 
-/*
-Menyusun fungsi dari fungsi lain membuat program lebih rapi,
-mengurangi pengulangan kode, dan mudah dirawat.
-*/
+// Menyusun fungsi dari fungsi lain membuat program lebih rapi,
+// mengurangi pengulangan kode, dan mudah dirawat.
 
 // =======================
 // CLASS BARANG
@@ -82,10 +80,7 @@ class Barang {
   // METHOD JUAL
   // =======================
 
-  /*
-  Method jual digunakan untuk mengurangi stok.
-  */
-
+  // Method jual digunakan untuk mengurangi stok.
   void jual(int n) {
     if (n > 0 && n <= _stok) {
       _stok -= n;
@@ -141,6 +136,39 @@ class BarangPromo extends Barang {
 }
 
 // =======================
+// FUNGSI PROSES BELI
+// =======================
+
+void prosesBeli(String inputJumlah) {
+  try {
+    // Mengubah input menjadi angka
+    int jumlah = int.parse(inputJumlah);
+
+    // Membuat objek barang
+    Barang barang = Barang(
+      "Buku Tulis",
+      5000,
+      40,
+      "ATK",
+    );
+
+    print("===== PROSES BELI =====");
+    print("Input jumlah : $inputJumlah");
+
+    // Memproses penjualan
+    barang.jual(jumlah);
+  } catch (e) {
+    // Jika input bukan angka
+    print("Input tidak valid.");
+    print("Silakan masukkan jumlah dalam bentuk angka.");
+  } finally {
+    // Selalu dijalankan
+    print("Transaksi dicatat di log.");
+    print("======================");
+  }
+}
+
+// =======================
 // MAIN
 // =======================
 
@@ -189,6 +217,26 @@ void main() {
   print("Diskon      : ${barangPromo.diskon}%");
   print("Harga Promo : Rp${hargaPromo.toInt()}");
   print("========================");
+
+  // =======================
+  // UJI VALIDASI INPUT
+  // =======================
+
+  print("");
+  print("===== UJI VALIDASI INPUT =====");
+
+  // Input benar
+  prosesBeli("2");
+
+  print("");
+
+  // Input salah
+  prosesBeli("dua");
+
+  // Membuktikan program tetap berjalan
+  // setelah menerima input yang salah
+  print("Setelah input salah, program masih berjalan.");
+  print("===== PROGRAM SELESAI =====");
 
   runApp(const MyApp());
 }
