@@ -4,6 +4,19 @@ void main() {
   runApp(const MyApp());
 }
 
+//Fungsi untuk memilih icon berdasarkan kategori
+IconData pilihIcon(String kategori) {
+  if (kategori == 'ATK') {
+    return Icons.edit;
+  } else if (kategori == 'Makanan') {
+    return Icons.fastfood;
+  } else if (kategori == 'Minuman') {
+    return Icons.local_drink;
+  } else {
+    return Icons.inventory_2;
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -13,19 +26,23 @@ class MyApp extends StatelessWidget {
     //Variabel stok
     int stok = 40;
 
+    //Kategori barang
+    String kategori = 'Minuman';
+
     return MaterialApp(
       home: Scaffold(
           appBar: AppBar(
             title: const Text('Koperasi Sekolah')
             ),
           body: Card (
+            elevation: 4,
             margin: const EdgeInsets.all(12),
             child: ListTile(
               //icon barang
-              leading: const Icon(Icons.inventory_2),
+              leading: Icon(pilihIcon(kategori)),
               //menebalkan nama barang
               title: const Text(
-                'Buku Tulis',
+                'Es Campur',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               //harga anggota dan umum
