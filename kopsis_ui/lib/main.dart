@@ -4,7 +4,7 @@ void main() {
   runApp(const MyApp());
 }
 
-//Fungsi untuk memilih icon berdasarkan kategori
+// Fungsi untuk memilih icon berdasarkan kategori
 IconData pilihIcon(String kategori) {
   if (kategori == 'ATK') {
     return Icons.edit;
@@ -22,40 +22,96 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-  
-    //Variabel stok
-    int stok = 40;
-
-    //Kategori barang
-    String kategori = 'Minuman';
+    // Data Barang
+    final List<Map<String, dynamic>> daftarBarang = [
+      {
+        'nama': 'Buku Tulis',
+        'anggota': 3000,
+        'umum': 3500,
+        'stok': 40,
+      },
+      {
+        'nama': 'Pulpen',
+        'anggota': 2500,
+        'umum': 3000,
+        'stok': 25,
+      },
+      {
+        'nama': 'Roti',
+        'anggota': 5000,
+        'umum': 5500,
+        'stok': 15,
+      },
+      {
+        'nama': 'Pensil',
+        'anggota': 2000,
+        'umum': 2500,
+        'stok': 30,
+      },
+      {
+        'nama': 'Penghapus',
+        'anggota': 1500,
+        'umum': 2000,
+        'stok': 20,
+      },
+      {
+        'nama': 'Teh Botol',
+        'anggota': 3000,
+        'umum': 3500,
+        'stok': 18,
+      },
+      {
+        'nama': 'Air Mineral',
+        'anggota': 2000,
+        'umum': 2500,
+        'stok': 35,
+      },
+      {
+        'nama': 'Keripik',
+        'anggota': 2500,
+        'umum': 3000,
+        'stok': 22,
+      },
+      {
+        'nama': 'Mie Instan',
+        'anggota': 4000,
+        'umum': 4500,
+        'stok': 12,
+      },
+      {
+        'nama': 'Spidol',
+        'anggota': 3500,
+        'umum': 4000,
+        'stok': 10,
+      },
+    ];
 
     return MaterialApp(
       home: Scaffold(
-          appBar: AppBar(
-            title: const Text('Koperasi Sekolah')
-            ),
-          body: Card (
-            elevation: 4,
-            margin: const EdgeInsets.all(12),
-            child: ListTile(
-              //icon barang
-              leading: Icon(pilihIcon(kategori)),
-              //menebalkan nama barang
-              title: const Text(
-                'Es Campur',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              //harga anggota dan umum
-              subtitle: const Text('Anggota Rp3.000 | Umum Rp3.500'),
-              //stok barang
-              trailing: Text(
-                // ignore: prefer_interpolation_to_compose_strings
-                'Stok' + stok.toString(),
-                style: TextStyle(color: stok == 0 ? Colors.red : Colors.black),
-              ),
-            ),
-          ),
+        appBar: AppBar(
+          title: const Text('Koperasi Sekolah'),
         ),
-      );
-    }
+        body: ListView.builder(
+          itemCount: daftarBarang.length,
+          itemBuilder: (context, index) {
+            final barang = daftarBarang[index];
+
+            return Card(
+              margin: const EdgeInsets.all(8),
+              child: ListTile(
+                leading: const Icon(Icons.inventory_2),
+                title: Text(barang['nama']),
+                subtitle: Text(
+                  'Anggota Rp${barang['anggota']} | Umum Rp${barang['umum']}',
+                ),
+                trailing: Text(
+                  'Stok ${barang['stok']}',
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
   }
+}
