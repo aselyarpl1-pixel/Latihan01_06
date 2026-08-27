@@ -4,7 +4,7 @@ void main() {
   runApp(const MyApp());
 }
 
-// Fungsi untuk memilih icon berdasarkan kategori
+// Fungsi memilih icon berdasarkan kategori
 IconData pilihIcon(String kategori) {
   if (kategori == 'ATK') {
     return Icons.edit;
@@ -22,84 +22,102 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Data Barang
+    // Data barang
     final List<Map<String, dynamic>> daftarBarang = [
       {
         'nama': 'Buku Tulis',
         'anggota': 3000,
         'umum': 3500,
         'stok': 40,
+        'kategori': 'ATK',
       },
       {
         'nama': 'Pulpen',
         'anggota': 2500,
         'umum': 3000,
         'stok': 25,
+        'kategori': 'ATK',
       },
       {
         'nama': 'Roti',
         'anggota': 5000,
         'umum': 5500,
-        'stok': 15,
+        'stok': 0,
+        'kategori': 'Makanan',
       },
       {
         'nama': 'Pensil',
         'anggota': 2000,
         'umum': 2500,
         'stok': 30,
+        'kategori': 'ATK',
       },
       {
         'nama': 'Penghapus',
         'anggota': 1500,
         'umum': 2000,
         'stok': 20,
+        'kategori': 'ATK',
       },
       {
         'nama': 'Teh Botol',
         'anggota': 3000,
         'umum': 3500,
         'stok': 18,
+        'kategori': 'Minuman',
       },
       {
         'nama': 'Air Mineral',
         'anggota': 2000,
         'umum': 2500,
         'stok': 35,
+        'kategori': 'Minuman',
       },
       {
         'nama': 'Keripik',
         'anggota': 2500,
         'umum': 3000,
         'stok': 22,
+        'kategori': 'Makanan',
       },
       {
         'nama': 'Mie Instan',
         'anggota': 4000,
         'umum': 4500,
         'stok': 12,
+        'kategori': 'Makanan',
       },
       {
         'nama': 'Spidol',
         'anggota': 3500,
         'umum': 4000,
         'stok': 10,
+        'kategori': 'ATK',
       },
     ];
 
+    // Hanya menampilkan barang yang stoknya lebih dari 0
+    final barangTersedia = daftarBarang
+        .where((barang) => barang['stok'] > 0)
+        .toList();
+
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Koperasi Sekolah'),
         ),
         body: ListView.builder(
-          itemCount: daftarBarang.length,
+          itemCount: barangTersedia.length,
           itemBuilder: (context, index) {
-            final barang = daftarBarang[index];
+            final barang = barangTersedia[index];
 
             return Card(
               margin: const EdgeInsets.all(8),
               child: ListTile(
-                leading: const Icon(Icons.inventory_2),
+                leading: Icon(
+                  pilihIcon(barang['kategori']),
+                ),
                 title: Text(barang['nama']),
                 subtitle: Text(
                   'Anggota Rp${barang['anggota']} | Umum Rp${barang['umum']}',
