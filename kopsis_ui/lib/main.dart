@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-// ignore: unused_import
 import 'barang_card.dart';
 
 void main() {
@@ -19,8 +18,16 @@ IconData pilihIcon(String kategori) {
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // Mengatur apakah daftar barang ditampilkan
+  bool tampilkanBarang = true;
 
   @override
   Widget build(BuildContext context) {
@@ -99,9 +106,8 @@ class MyApp extends StatelessWidget {
     ];
 
     // Hanya menampilkan barang yang stoknya lebih dari 0
-    final barangTersedia = daftarBarang
-        .where((barang) => barang['stok'] > 0)
-        .toList();
+    final barangTersedia =
+        daftarBarang.where((barang) => barang['stok'] > 0).toList();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -109,19 +115,37 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Koperasi Sekolah'),
         ),
-        body: ListView.builder(
-          itemCount: barangTersedia.length,
-          itemBuilder: (context, index) {
-            final barang = barangTersedia[index];
 
-            return BarangCard(
-              nama: barang['nama'],
-              hargaAnggota: barang ['anggota'],
-              stok: barang['stok'],
-              kategori: barang['kategori'],
-              sorot: true,
-            );
+        body: tampilkanBarang
+            ? ListView.builder(
+                itemCount: barangTersedia.length,
+                itemBuilder: (context, index) {
+                  final barang = barangTersedia[index];
+
+                  return BarangCard(
+                    nama: barang['nama'],
+                    hargaAnggota: barang['anggota'],
+                    stok: barang['stok'],
+                    kategori: barang['kategori'],
+                    sorot: true,
+                  );
+                },
+              )
+            : const Center(
+                child: Text(
+                  'Barang sudah dihapus',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+
+        // Tombol hapus
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            setState(() {
+              tampilkanBarang = false;
+            });
           },
+          child: const Icon(Icons.delete),
         ),
       ),
     );
