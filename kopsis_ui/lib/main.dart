@@ -29,6 +29,30 @@ class _MyAppState extends State<MyApp> {
   // Mengatur apakah daftar barang ditampilkan
   bool tampilkanBarang = true;
 
+  // TAMBAHAN: Controller untuk mengontrol isi kotak pencarian
+  late TextEditingController _controller;
+
+  // TAMBAHAN: Menyimpan kata yang sedang dimasukkan pada kotak pencarian
+  String kataCari = '';
+
+  // TAMBAHAN: Menjalankan controller satu kali ketika halaman dibuat
+  @override
+  void initState() {
+    super.initState();
+
+    // Membuat TextEditingController untuk kotak pencarian
+    _controller = TextEditingController();
+  }
+
+  // TAMBAHAN: Membersihkan controller ketika halaman ditutup
+  @override
+  void dispose() {
+    // Menghapus controller agar tidak menyebabkan kebocoran resource
+    _controller.dispose();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     // Data barang
@@ -109,6 +133,16 @@ class _MyAppState extends State<MyApp> {
     final barangTersedia =
         daftarBarang.where((barang) => barang['stok'] > 0).toList();
 
+    // TAMBAHAN: Menyaring daftar barang berdasarkan kata yang diketik
+    final hasilCari = barangTersedia
+        .where(
+          (barang) => barang['nama']
+              .toString()
+              .toLowerCase()
+              .contains(kataCari),
+        )
+        .toList();
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
@@ -117,19 +151,55 @@ class _MyAppState extends State<MyApp> {
         ),
 
         body: tampilkanBarang
-            ? ListView.builder(
-                itemCount: barangTersedia.length,
-                itemBuilder: (context, index) {
-                  final barang = barangTersedia[index];
+            ? Column(
+                children: [
+                  // TAMBAHAN: Kotak pencarian barang
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: TextField(
+                      // Menghubungkan TextField dengan controller
+                      controller: _controller,
 
-                  return BarangCard(
-                    nama: barang['nama'],
-                    hargaAnggota: barang['anggota'],
-                    stok: barang['stok'],
-                    kategori: barang['kategori'],
-                    sorot: true,
-                  );
-                },
+                      // Mengatur tampilan kotak pencarian
+                      decoration: const InputDecoration(
+                        hintText: 'Cari barang...',
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(),
+                      ),
+
+                      // TAMBAHAN: Menjalankan pencarian setiap kali teks berubah
+                      onChanged: (nilai) {
+                        setState(() {
+                          // Mengubah kata pencarian menjadi huruf kecil
+                          // agar pencarian tidak membedakan huruf besar/kecil
+                          kataCari = nilai.toLowerCase();
+                        });
+                      },
+                    ),
+                  ),
+
+                  // TAMBAHAN: Menampilkan daftar barang hasil pencarian
+                  Expanded(
+                    child: ListView.builder(
+                      // Jumlah kartu mengikuti jumlah hasil pencarian
+                      itemCount: hasilCari.length,
+
+                      itemBuilder: (context, index) {
+                        // Mengambil data barang dari hasil pencarian
+                        final barang = hasilCari[index];
+
+                        // Menampilkan barang menggunakan BarangCard
+                        return BarangCard(
+                          nama: barang['nama'],
+                          hargaAnggota: barang['anggota'],
+                          stok: barang['stok'],
+                          kategori: barang['kategori'],
+                          sorot: true,
+                        );
+                      },
+                    ),
+                  ),
+                ],
               )
             : const Center(
                 child: Text(
