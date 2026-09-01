@@ -145,61 +145,119 @@ class _MyAppState extends State<MyApp> {
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Koperasi Sekolah'),
         ),
 
         body: tampilkanBarang
-            ? Column(
-                children: [
-                  // TAMBAHAN: Kotak pencarian barang
-                  Padding(
-                    padding: const EdgeInsets.all(12.0),
-                    child: TextField(
-                      // Menghubungkan TextField dengan controller
-                      controller: _controller,
+            ? Center(
+                // PERBAIKAN/TAMBAHAN TUGAS:
+                // LayoutBuilder digunakan untuk mengetahui
+                // lebar area yang tersedia.
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // PERBAIKAN/TAMBAHAN TUGAS:
+                    // Lebar tampilan dibuat 1000 px untuk pengujian
+                    // kondisi antara 900 sampai 1999 px.
+                    final double lebarTampilan =
+                        constraints.maxWidth < 1000
+                            ? constraints.maxWidth
+                            : 1000;
+                    // PERBAIKAN/TAMBAHAN TUGAS:
+                    // Menentukan jumlah kolom berdasarkan lebar
+                    int kolom;
 
-                      // Mengatur tampilan kotak pencarian
-                      decoration: const InputDecoration(
-                        hintText: 'Cari barang...',
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(),
+                    if (lebarTampilan < 600) {
+                      // Kurang dari 600 px = 1 kolom
+                      kolom = 1;
+                    } else if (lebarTampilan < 900) {
+                      // 600 sampai 899 px = 2 kolom
+                      kolom = 2;
+                    } else {
+                      // 900 px atau lebih = 3 kolom
+                      kolom = 3;
+                    }
+
+                    return SizedBox(
+                      width: lebarTampilan,
+
+                      child: Column(
+                        children: [
+                          // TAMBAHAN: Kotak pencarian barang
+                          Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: TextField(
+                              // Menghubungkan TextField dengan controller
+                              controller: _controller,
+
+                              // Mengatur tampilan kotak pencarian
+                              decoration: const InputDecoration(
+                                hintText: 'Cari barang...',
+                                prefixIcon: Icon(Icons.search),
+                                border: OutlineInputBorder(),
+                              ),
+
+                              // TAMBAHAN:
+                              // Menjalankan pencarian setiap kali teks berubah
+                              onChanged: (nilai) {
+                                setState(() {
+                                  // Mengubah kata pencarian menjadi huruf kecil
+                                  // agar pencarian tidak membedakan huruf besar/kecil
+                                  kataCari = nilai.toLowerCase();
+                                });
+                              },
+                            ),
+                          ),
+
+                          // PERBAIKAN/TAMBAHAN TUGAS:
+                          // Menampilkan lebar tampilan yang benar-benar
+                          // digunakan dalam pengujian.
+                          Text(
+                            'Lebar layar: '
+                            '${lebarTampilan.toStringAsFixed(0)} px',
+                          ),
+
+                          // PERBAIKAN/TAMBAHAN TUGAS:
+                          // GridView digunakan untuk menampilkan barang
+                          // dalam jumlah kolom yang berbeda sesuai lebar.
+                          Expanded(
+                            child: GridView.builder(
+                              // PERBAIKAN/TAMBAHAN TUGAS:
+                              // Menentukan jumlah kolom berdasarkan
+                              // lebar tampilan.
+                              gridDelegate:
+                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: kolom,
+
+                                // Mengatur perbandingan lebar dan tinggi kartu
+                                childAspectRatio: 3,
+                              ),
+
+                              // Jumlah kartu mengikuti hasil pencarian
+                              itemCount: hasilCari.length,
+
+                              itemBuilder: (context, index) {
+                                // Mengambil data barang
+                                final barang = hasilCari[index];
+
+                                // Menampilkan barang menggunakan BarangCard
+                                return BarangCard(
+                                  nama: barang['nama'],
+                                  hargaAnggota: barang['anggota'],
+                                  stok: barang['stok'],
+                                  kategori: barang['kategori'],
+                                  sorot: true,
+                                );
+                              },
+                            ),
+                          ),
+                        ],
                       ),
-
-                      // TAMBAHAN: Menjalankan pencarian setiap kali teks berubah
-                      onChanged: (nilai) {
-                        setState(() {
-                          // Mengubah kata pencarian menjadi huruf kecil
-                          // agar pencarian tidak membedakan huruf besar/kecil
-                          kataCari = nilai.toLowerCase();
-                        });
-                      },
-                    ),
-                  ),
-
-                  // TAMBAHAN: Menampilkan daftar barang hasil pencarian
-                  Expanded(
-                    child: ListView.builder(
-                      // Jumlah kartu mengikuti jumlah hasil pencarian
-                      itemCount: hasilCari.length,
-
-                      itemBuilder: (context, index) {
-                        // Mengambil data barang dari hasil pencarian
-                        final barang = hasilCari[index];
-
-                        // Menampilkan barang menggunakan BarangCard
-                        return BarangCard(
-                          nama: barang['nama'],
-                          hargaAnggota: barang['anggota'],
-                          stok: barang['stok'],
-                          kategori: barang['kategori'],
-                          sorot: true,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                    );
+                  },
+                ),
               )
             : const Center(
                 child: Text(
