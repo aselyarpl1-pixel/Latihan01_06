@@ -20,104 +20,100 @@ class BarangCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(8),
-      color: Colors.lightBlue.shade100,
+      margin: EdgeInsets.zero,
+
+      elevation: 2,
+
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+
+      color: Colors.white,
 
       child: Padding(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(14),
 
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-            // BAGIAN NAMA DAN JUMLAH
-            Row(
-              children: [
-                // Tombol jumlah
-                KeranjangItem(
-                  stok: stok,
-                  harga: hargaAnggota,
-                ),
-
-                const SizedBox(width: 8),
-
-                // Nama barang menggunakan Expanded
-                // agar tidak melebar keluar Card
-                Expanded(
-                  child: Text(
-                    nama,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
-              ],
+            // =========================
+            // NAMA BARANG
+            // =========================
+            Text(
+              nama,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
 
             const SizedBox(height: 8),
 
-            // HARGA
+            // =========================
+            // HARGA ANGGOTA
+            // =========================
             Text(
               'Anggota Rp$hargaAnggota',
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
-                color: Colors.black87,
-                fontSize: 13,
+                fontSize: 14,
+                color: Colors.black54,
               ),
             ),
 
-            const SizedBox(height: 6),
+            const SizedBox(height: 10),
 
+            // =========================
             // KATEGORI DAN STOK
+            // =========================
             Row(
               children: [
                 // Kategori
-                Expanded(
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade100,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      kategori,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Colors.green,
-                        fontSize: 11,
-                        fontWeight: FontWeight.bold,
-                      ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.green.shade100,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    kategori,
+                    style: TextStyle(
+                      color: Colors.green.shade700,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
 
-                const SizedBox(width: 8),
+                const Spacer(),
 
                 // Stok
-                Expanded(
-                  child: Text(
-                    'Stok ${stok.toString()}',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    textAlign: TextAlign.end,
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 13,
-                    ),
+                Text(
+                  'Stok $stok',
+                  style: TextStyle(
+                    color: Colors.green.shade700,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
                   ),
                 ),
               ],
+            ),
+
+            const Spacer(),
+
+            // =========================
+            // KERANJANG / JUMLAH
+            // =========================
+            Center(
+              child: KeranjangItem(
+                stok: stok,
+                harga: hargaAnggota,
+              ),
             ),
           ],
         ),

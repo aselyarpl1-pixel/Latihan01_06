@@ -1,68 +1,7 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-// Widget utama aplikasi
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Keranjang Barang',
-      home: const HalamanKeranjang(),
-    );
-  }
-}
-
-// Halaman utama
-class HalamanKeranjang extends StatefulWidget {
-  const HalamanKeranjang({super.key});
-
-  @override
-  State<HalamanKeranjang> createState() => _HalamanKeranjangState();
-}
-
-class _HalamanKeranjangState extends State<HalamanKeranjang> {
-  // Untuk mengatur apakah KeranjangItem ditampilkan atau tidak
-  bool tampilkanKeranjang = true;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Keranjang Barang'),
-      ),
-      body: Center(
-        child: tampilkanKeranjang
-            ? const KeranjangItem(
-                stok: 10,
-                harga: 5000,
-              )
-            : const Text(
-                'KeranjangItem sudah dihapus',
-                style: TextStyle(
-                  fontSize: 18,
-                ),
-              ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            tampilkanKeranjang = false;
-          });
-        },
-        child: const Icon(Icons.delete),
-      ),
-    );
-  }
-}
-
 // KeranjangItem menggunakan StatefulWidget
-// karena jumlah barang dapat berubah saat tombol + atau - ditekan.
+// karena jumlah barang bisa berubah.
 class KeranjangItem extends StatefulWidget {
   final int stok;
   final int harga;
@@ -77,7 +16,6 @@ class KeranjangItem extends StatefulWidget {
   State<KeranjangItem> createState() => _KeranjangItemState();
 }
 
-// State untuk menyimpan jumlah barang yang dipilih.
 class _KeranjangItemState extends State<KeranjangItem> {
   late int jumlah;
 
@@ -85,16 +23,12 @@ class _KeranjangItemState extends State<KeranjangItem> {
   void initState() {
     super.initState();
 
-    // Menampilkan pesan lifecycle
-    // ignore: avoid_print
-    print('initState dipanggil');
-
-    // Jika stok tersedia, jumlah awal adalah 1.
-    // Jika stok 0, jumlah awal adalah 0.
+    // Jika stok tersedia, jumlah awal = 1.
+    // Jika stok 0, jumlah awal = 0.
     jumlah = widget.stok > 0 ? 1 : 0;
   }
 
-  // Fungsi untuk mengurangi jumlah barang.
+  // Mengurangi jumlah
   void kurangiJumlah() {
     if (jumlah > 0) {
       setState(() {
@@ -103,15 +37,13 @@ class _KeranjangItemState extends State<KeranjangItem> {
     }
   }
 
-  // Fungsi untuk menambah jumlah barang.
+  // Menambah jumlah
   void tambahJumlah() {
-    // Jumlah tidak boleh melebihi stok.
     if (jumlah < widget.stok) {
       setState(() {
         jumlah++;
       });
     } else {
-      // Menampilkan pesan jika jumlah sudah mencapai stok.
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -124,23 +56,20 @@ class _KeranjangItemState extends State<KeranjangItem> {
 
   @override
   Widget build(BuildContext context) {
-    // Menampilkan pesan setiap kali build dipanggil.
-    // ignore: avoid_print
-    print('build dipanggil');
-
-    // Menghitung total harga berdasarkan jumlah barang.
-    int totalHarga = widget.harga * jumlah;
+    // Menghitung total harga
+    final int totalHarga = widget.harga * jumlah;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Tombol untuk mengurangi jumlah.
+        // Tombol -
         IconButton(
+          onPressed: jumlah > 0 ? kurangiJumlah : null,
           icon: const Icon(Icons.remove),
-          onPressed: kurangiJumlah,
+          tooltip: 'Kurangi',
         ),
 
-        // Menampilkan jumlah dan total harga.
+        // Jumlah dan total
         Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -151,31 +80,26 @@ class _KeranjangItemState extends State<KeranjangItem> {
                 fontWeight: FontWeight.bold,
               ),
             ),
+
             Text(
               'Rp$totalHarga',
               style: const TextStyle(
                 fontSize: 11,
-                fontWeight: FontWeight.bold,
+                color: Colors.black54,
               ),
             ),
           ],
         ),
 
-        // Tombol untuk menambah jumlah.
+        // Tombol +
         IconButton(
+          onPressed: jumlah < widget.stok
+              ? tambahJumlah
+              : null,
           icon: const Icon(Icons.add),
-          onPressed: tambahJumlah,
+          tooltip: 'Tambah',
         ),
       ],
     );
-  }
-
-  @override
-  void dispose() {
-    // Menampilkan pesan ketika State dihapus.
-    // ignore: avoid_print
-    print('dispose dipanggil');
-
-    super.dispose();
   }
 }
