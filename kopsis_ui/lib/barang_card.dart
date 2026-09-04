@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'keranjang_item.dart';
 
-// BarangCard menggunakan StatelessWidget karena
-// tidak memiliki state yang perlu diubah.
 class BarangCard extends StatelessWidget {
   final String nama;
   final int hargaAnggota;
@@ -23,70 +21,103 @@ class BarangCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.all(8),
+      color: Colors.lightBlue.shade100,
 
-      // Warna kartu berdasarkan nilai sorot.
-      color: sorot
-          ? Colors.yellow.shade100
-          : Colors.green.shade50,
+      child: Padding(
+        padding: const EdgeInsets.all(10),
 
-      child: ListTile(
-        // KeranjangItem menangani perubahan jumlah.
-        leading: KeranjangItem(
-          stok: stok,
-          harga: hargaAnggota,
-        ),
-
-        // Menampilkan nama barang.
-        title: Text(
-          nama,
-          style: const TextStyle(
-            color: Colors.green,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-
-        // Menampilkan harga anggota.
-        subtitle: Text(
-          'Anggota Rp$hargaAnggota',
-          style: const TextStyle(
-            color: Colors.black87,
-          ),
-        ),
-
-        // Menampilkan kategori dan stok.
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Label kategori.
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8,
-                vertical: 3,
-              ),
-              decoration: BoxDecoration(
-                color: Colors.green.shade100,
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                kategori,
-                style: const TextStyle(
-                  color: Colors.green,
-                  fontSize: 11,
-                  fontWeight: FontWeight.bold,
+
+            // BAGIAN NAMA DAN JUMLAH
+            Row(
+              children: [
+                // Tombol jumlah
+                KeranjangItem(
+                  stok: stok,
+                  harga: hargaAnggota,
                 ),
+
+                const SizedBox(width: 8),
+
+                // Nama barang menggunakan Expanded
+                // agar tidak melebar keluar Card
+                Expanded(
+                  child: Text(
+                    nama,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 8),
+
+            // HARGA
+            Text(
+              'Anggota Rp$hargaAnggota',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: Colors.black87,
+                fontSize: 13,
               ),
             ),
 
-            const SizedBox(height: 4),
+            const SizedBox(height: 6),
 
-            // Menampilkan stok.
-            Text(
-              'Stok $stok',
-              style: const TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
-              ),
+            // KATEGORI DAN STOK
+            Row(
+              children: [
+                // Kategori
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green.shade100,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      kategori,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.green,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(width: 8),
+
+                // Stok
+                Expanded(
+                  child: Text(
+                    'Stok ${stok.toString()}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

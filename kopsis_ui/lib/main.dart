@@ -26,39 +26,34 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // Mengatur apakah daftar barang ditampilkan
   bool tampilkanBarang = true;
 
-  // TAMBAHAN: Controller untuk mengontrol isi kotak pencarian
+  // Controller untuk kotak pencarian
   late TextEditingController _controller;
 
-  // TAMBAHAN: Menyimpan kata yang sedang dimasukkan pada kotak pencarian
+  // Menyimpan kata yang dicari
   String kataCari = '';
 
-  // TAMBAHAN: Menjalankan controller satu kali ketika halaman dibuat
   @override
   void initState() {
     super.initState();
-
-    // Membuat TextEditingController untuk kotak pencarian
     _controller = TextEditingController();
   }
 
-  // TAMBAHAN: Membersihkan controller ketika halaman ditutup
   @override
   void dispose() {
-    // Menghapus controller agar tidak menyebabkan kebocoran resource
     _controller.dispose();
-
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Data barang
+    // =========================
+    // DATA BARANG
+    // =========================
     final List<Map<String, dynamic>> daftarBarang = [
       {
-        'nama': 'Buku Tulis',
+        'nama': 'Buku Tulis Bergaris 58 Lembar Sampul Tebal',
         'anggota': 3000,
         'umum': 3500,
         'stok': 40,
@@ -129,19 +124,24 @@ class _MyAppState extends State<MyApp> {
       },
     ];
 
-    // Hanya menampilkan barang yang stoknya lebih dari 0
+    // =========================
+    // FILTER STOK
+    // =========================
     final barangTersedia =
-        daftarBarang.where((barang) => barang['stok'] > 0).toList();
+        daftarBarang.where((barang) {
+          return barang['stok'] > 0;
+        }).toList();
 
-    // TAMBAHAN: Menyaring daftar barang berdasarkan kata yang diketik
-    final hasilCari = barangTersedia
-        .where(
-          (barang) => barang['nama']
+    // =========================
+    // FILTER PENCARIAN
+    // =========================
+    final hasilCari =
+        barangTersedia.where((barang) {
+          return barang['nama']
               .toString()
               .toLowerCase()
-              .contains(kataCari),
-        )
-        .toList();
+              .contains(kataCari);
+        }).toList();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -151,32 +151,30 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Koperasi Sekolah'),
         ),
 
+        // =========================
+        // BODY
+        // =========================
         body: tampilkanBarang
             ? Center(
-                // PERBAIKAN/TAMBAHAN TUGAS:
-                // LayoutBuilder digunakan untuk mengetahui
-                // lebar area yang tersedia.
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    // PERBAIKAN/TAMBAHAN TUGAS:
-                    // Lebar tampilan dibuat 1000 px untuk pengujian
-                    // kondisi antara 900 sampai 1999 px.
+
+                    // Membatasi lebar tampilan maksimal 600 px
                     final double lebarTampilan =
                         constraints.maxWidth < 1000
                             ? constraints.maxWidth
                             : 1000;
-                    // PERBAIKAN/TAMBAHAN TUGAS:
-                    // Menentukan jumlah kolom berdasarkan lebar
+
+                    // =========================
+                    // MENENTUKAN JUMLAH KOLOM
+                    // =========================
                     int kolom;
 
                     if (lebarTampilan < 600) {
-                      // Kurang dari 600 px = 1 kolom
                       kolom = 1;
                     } else if (lebarTampilan < 900) {
-                      // 600 sampai 899 px = 2 kolom
                       kolom = 2;
                     } else {
-                      // 900 px atau lebih = 3 kolom
                       kolom = 3;
                     }
 
@@ -185,64 +183,68 @@ class _MyAppState extends State<MyApp> {
 
                       child: Column(
                         children: [
-                          // TAMBAHAN: Kotak pencarian barang
+
+                          // =========================
+                          // KOTAK PENCARIAN
+                          // =========================
                           Padding(
-                            padding: const EdgeInsets.all(12.0),
+                            padding: const EdgeInsets.all(12),
                             child: TextField(
-                              // Menghubungkan TextField dengan controller
                               controller: _controller,
 
-                              // Mengatur tampilan kotak pencarian
                               decoration: const InputDecoration(
                                 hintText: 'Cari barang...',
                                 prefixIcon: Icon(Icons.search),
                                 border: OutlineInputBorder(),
                               ),
 
-                              // TAMBAHAN:
-                              // Menjalankan pencarian setiap kali teks berubah
                               onChanged: (nilai) {
                                 setState(() {
-                                  // Mengubah kata pencarian menjadi huruf kecil
-                                  // agar pencarian tidak membedakan huruf besar/kecil
                                   kataCari = nilai.toLowerCase();
                                 });
                               },
                             ),
                           ),
 
-                          // PERBAIKAN/TAMBAHAN TUGAS:
-                          // Menampilkan lebar tampilan yang benar-benar
-                          // digunakan dalam pengujian.
+                          // =========================
+                          // INFORMASI LEBAR LAYAR
+                          // =========================
                           Text(
                             'Lebar layar: '
                             '${lebarTampilan.toStringAsFixed(0)} px',
                           ),
 
-                          // PERBAIKAN/TAMBAHAN TUGAS:
-                          // GridView digunakan untuk menampilkan barang
-                          // dalam jumlah kolom yang berbeda sesuai lebar.
+                          const SizedBox(height: 8),
+
+                          // =========================
+                          // GRID BARANG
+                          // =========================
                           Expanded(
                             child: GridView.builder(
-                              // PERBAIKAN/TAMBAHAN TUGAS:
-                              // Menentukan jumlah kolom berdasarkan
-                              // lebar tampilan.
+                              padding: const EdgeInsets.all(8),
+
                               gridDelegate:
                                   SliverGridDelegateWithFixedCrossAxisCount(
+                                // Jumlah kolom
                                 crossAxisCount: kolom,
 
-                                // Mengatur perbandingan lebar dan tinggi kartu
-                                childAspectRatio: 3,
+                                // Card dibuat lebih tinggi
+                                // agar tidak overflow
+                                childAspectRatio: 1.5,
+
+                                // Jarak antar kolom
+                                crossAxisSpacing: 8,
+
+                                // Jarak antar baris
+                                mainAxisSpacing: 8,
                               ),
 
-                              // Jumlah kartu mengikuti hasil pencarian
+                              // Jumlah barang
                               itemCount: hasilCari.length,
 
                               itemBuilder: (context, index) {
-                                // Mengambil data barang
                                 final barang = hasilCari[index];
 
-                                // Menampilkan barang menggunakan BarangCard
                                 return BarangCard(
                                   nama: barang['nama'],
                                   hargaAnggota: barang['anggota'],
@@ -259,14 +261,22 @@ class _MyAppState extends State<MyApp> {
                   },
                 ),
               )
+
+            // =========================
+            // JIKA BARANG DIHAPUS
+            // =========================
             : const Center(
                 child: Text(
                   'Barang sudah dihapus',
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(
+                    fontSize: 18,
+                  ),
                 ),
               ),
 
-        // Tombol hapus
+        // =========================
+        // TOMBOL HAPUS
+        // =========================
         floatingActionButton: FloatingActionButton(
           onPressed: () {
             setState(() {
